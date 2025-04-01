@@ -12,9 +12,14 @@ Docker を起動
 docker-compose up -d
 ```
 
-コンテナにログインする
+PHPコンテナにログインする
 ```
 docker-compose exec php bash
+```
+
+DBコンテナにログインする
+```
+docker-compose exec db bash
 ```
 
 コンテナからログアウト
