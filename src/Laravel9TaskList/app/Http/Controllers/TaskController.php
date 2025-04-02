@@ -9,6 +9,17 @@ use App\Http\Requests\CreateTask;
 class TaskController extends Controller
 {
     /**
+     * ステータス（状態）定義
+     * 
+     */
+    const STATUS = [
+        [ 'label' => '指定なし', 'value' => '' ],
+        [ 'label' => '未対応', 'value' => '1' ],
+        [ 'label' => '対応中', 'value' => '2' ],
+        [ 'label' => '完了', 'value' => '3' ],
+    ];
+
+    /**
      *  【タスク一覧ページの表示機能】
      *
      *  GET /tasks
@@ -31,7 +42,7 @@ class TaskController extends Controller
      */
     public function showCreateForm()
     {
-        return view('tasks/create');
+        return view('tasks/create', ['status' => self::STATUS]);
     }
 
     /**

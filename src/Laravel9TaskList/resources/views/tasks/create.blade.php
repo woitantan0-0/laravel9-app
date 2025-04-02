@@ -50,10 +50,9 @@
                         <div class="form-group">
                             <label for="status">状態</label>
                             <select class="form-control" name="status" id="status">
-                                <option value="" @if(old('status') == '') selected  @endif>指定なし</option>
-                                <option value="1" @if(old('status') == '1') selected  @endif>未対応</option>
-                                <option value="2" @if(old('status') == '2') selected  @endif>対応中</option>
-                                <option value="3" @if(old('status') == '3') selected  @endif>完了</option>
+                                @foreach($status as $state)
+                                    <option value="{{ $state['value'] }}" @if(old('status') == $state['value']) selected @endif>{{ $state['label'] }}</option>
+                                @endforeach
                             </select>
                         </div>
                         <div class="form-group">
