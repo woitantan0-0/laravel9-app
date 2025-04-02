@@ -27,8 +27,8 @@
                         <tbody>
                             @foreach($tasks as $task)
                                 <tr>
-                                    <td>{{ $task->title }}</td>
-                                    <td>{{ $task->description }}</td>
+                                    <td class="title">{{ $task->title }}</td>
+                                    <td class="description">{{ $task->description }}</td>
                                     <td>
                                         <span class="label {{ $task->status_class }}">{{ $task->status_label }}</span>
                                     </td>

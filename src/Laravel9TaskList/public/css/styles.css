@@ -56,8 +56,10 @@ a.my-navbar-item:hover {
     word-wrap: break-word;
     word-break: break-word;
 }
-
-.table td:nth-child(2) {
+.table td.title {
+    width: 200px;
+}
+.table td.description {
     width: 400px;
 }
 
