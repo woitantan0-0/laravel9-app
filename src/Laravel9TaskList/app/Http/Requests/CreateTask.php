@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+use App\Models\Task;
 
 class CreateTask extends FormRequest
 {
@@ -25,10 +27,11 @@ class CreateTask extends FormRequest
      */
     public function rules()
     {
+        $status_rule = Rule::in(array_keys(Task::STATUS));
         return [
             'title' => 'required|max:100',
             'description' => 'nullable|max:500',
-            'status' => 'integer|nullable',
+            'status' => 'integer|nullable|' . $status_rule,
             'due_date' => 'required|date|after_or_equal:today',
         ];
     }
@@ -55,8 +58,14 @@ class CreateTask extends FormRequest
      */
     public function messages()
     {
+        $status_labels = array_map(function($item) {
+            return $item['label'];
+        }, Task::STATUS);
+        $status_labels = implode('、', $status_labels);
+
         return [
             /* ルールに違反した場合にエラーメッセージを出力する */
+            'status.in' => ':attribute には ' . $status_labels . ' のいずれかを指定してください。',
             // 'due_date.after_or_equal':'項目名.ルール内容'
             'due_date.after_or_equal' => ':attribute には今日以降の日付を入力してください。',
         ];

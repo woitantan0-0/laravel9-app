@@ -63,4 +63,24 @@ class TaskTest extends TestCase
             'due_date' => '期限日 には今日以降の日付を入力してください。',
         ]);
     }
+
+    /**
+     * 状態（セレクトボックスの値）が定義された値ではない場合はバリデーションエラーにするメソッド
+     * 用途：状態（'status'）に不正な値（1,2,3以外）を入力してエラーをテストする
+     * 
+     * @test
+     */
+    public function status_should_be_within_defined_numbers()
+    {
+        $response = $this->post('/tasks/create', [
+            'title' => 'Sample task',
+            'description' => '',
+            'status' => 4,
+            'due_date' => Carbon::today()->format('Y/m/d'),
+        ]);
+    
+        $response->assertInvalid([
+            'status' => '状態 には 未着手,着手中,完了 のいずれかを指定してください。',
+        ]);
+    }
 }

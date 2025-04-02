@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Task;
 use App\Http\Requests\CreateTask;
+use App\Http\Requests\EditTask;
 
 class TaskController extends Controller
 {
@@ -55,6 +56,42 @@ class TaskController extends Controller
     public function create(CreateTask $request)
     {
         $task = new Task();
+        $task->title = $request->title;
+        $task->description = $request->description;
+        $task->status = $request->status;
+        $task->due_date = $request->due_date;
+        $task->save();
+
+        return redirect()->route('tasks.index');
+    }
+
+    /**
+     *  【タスク編集ページの表示機能】
+     *  機能：タスクIDをフォルダ編集ページに渡して表示する
+     *  
+     *  GET /tasks/{task_id}/edit
+     *  @param int $task_id
+     *  @return \Illuminate\View\View
+     */
+    public function showEditForm($task_id)
+    {
+        $task = Task::find($task_id);
+
+        return view('tasks/edit', ['task' => $task]);
+    }
+
+    /**
+     *  【タスクの編集機能】
+     *
+     *  POST /tasks/edit
+     *  @param int $task_id
+     *  @param EditTask $request
+     *  @return \Illuminate\Http\RedirectResponse
+     */
+    public function edit(int $task_id, EditTask $request)
+    {
+        $task = Task::find($task_id);
+
         $task->title = $request->title;
         $task->description = $request->description;
         $task->status = $request->status;
