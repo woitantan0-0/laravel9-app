@@ -34,7 +34,7 @@
                                     </td>
                                     <td>{{ $task->format_due_date }}</td>
                                     <td><a href="/tasks/{{ $task->id }}/edit">編集</a></td>
-                                    <td><a href="#">削除</a></td>
+                                    <td><a href="/tasks/{{ $task->id }}/delete">削除</a></td>
                                 </tr>
                             @endforeach
                         </tbody>

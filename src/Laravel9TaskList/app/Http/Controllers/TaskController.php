@@ -67,13 +67,13 @@ class TaskController extends Controller
 
     /**
      *  【タスク編集ページの表示機能】
-     *  機能：タスクIDをフォルダ編集ページに渡して表示する
+     *  機能：タスクIDを編集ページに渡して表示する
      *  
      *  GET /tasks/{task_id}/edit
      *  @param int $task_id
      *  @return \Illuminate\View\View
      */
-    public function showEditForm($task_id)
+    public function showEditForm(int $task_id)
     {
         $task = Task::find($task_id);
 
@@ -83,7 +83,7 @@ class TaskController extends Controller
     /**
      *  【タスクの編集機能】
      *
-     *  POST /tasks/edit
+     *  POST /tasks/{task_id}/edit
      *  @param int $task_id
      *  @param EditTask $request
      *  @return \Illuminate\Http\RedirectResponse
@@ -97,6 +97,37 @@ class TaskController extends Controller
         $task->status = $request->status;
         $task->due_date = $request->due_date;
         $task->save();
+
+        return redirect()->route('tasks.index');
+    }
+
+    /**
+     *  【タスク削除ページの表示機能】
+     *  機能：タスクIDを削除ページに渡して表示する
+     *  
+     *  GET /tasks/{task_id}/edit
+     *  @param int $task_id
+     *  @return \Illuminate\View\View
+     */
+    public function showDeleteForm(int $task_id)
+    {
+        $task = Task::find($task_id);
+
+        return view('tasks/delete', ['task' => $task]);
+    }
+
+    /**
+     *  【タスクの削除機能】
+     *
+     *  POST /tasks/{task_id}/delete
+     *  @param int $task_id
+     *  @return \Illuminate\Http\RedirectResponse
+     */
+    public function delete(int $task_id)
+    {
+        $task = Task::find($task_id);
+
+        $task->delete();
 
         return redirect()->route('tasks.index');
     }
