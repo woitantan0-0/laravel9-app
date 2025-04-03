@@ -50,7 +50,7 @@
                         <div class="form-group">
                             <label for="status">状態</label>
                             <select class="form-control" name="status" id="status">
-                                @foreach($status as $state)
+                                @foreach(\App\Http\Controllers\TaskController::STATUS as $state)
                                     <option value="{{ $state['value'] }}" @if(old('status') == $state['value']) selected @endif>{{ $state['label'] }}</option>
                                 @endforeach
                             </select>

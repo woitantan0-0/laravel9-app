@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Task;
+use App\Models\User;
 use App\Http\Requests\CreateTask;
 use App\Http\Requests\EditTask;
+use Illuminate\Support\Facades\Auth;
 
 class TaskController extends Controller
 {
@@ -28,10 +30,19 @@ class TaskController extends Controller
      */
     public function index()
     {
-        $tasks = Task::all();
+        $tasks = Task::all()->sortBy('user_id');
+        $users = User::all();
+        foreach($tasks as $task) {
+            foreach($users as $user) {
+                if ($task->user_id === $user->id) {
+                    $task->user_name = $user->name;
+                }
+            }
+        }
 
         return view('tasks/index', [
             'tasks' => $tasks,
+            'users' => $users,
         ]);
     }
 
@@ -43,7 +54,10 @@ class TaskController extends Controller
      */
     public function showCreateForm()
     {
-        return view('tasks/create', ['status' => self::STATUS]);
+        // ログインユーザーに紐づくタスクだけを取得
+        $tasks = Auth::user()->tasks;
+
+        return view('tasks/create', compact('tasks'));
     }
 
     /**
@@ -60,7 +74,9 @@ class TaskController extends Controller
         $task->description = $request->description;
         $task->status = $request->status;
         $task->due_date = $request->due_date;
-        $task->save();
+
+        // （ログイン）ユーザーに紐づけて保存する
+        Auth::user()->tasks()->save($task);
 
         return redirect()->route('tasks.index');
     }
@@ -75,7 +91,9 @@ class TaskController extends Controller
      */
     public function showEditForm(int $task_id)
     {
-        $task = Task::find($task_id);
+        /** @var App\Models\User **/
+        $user = Auth::user();
+        $task = $user->tasks()->findOrFail($task_id);
 
         return view('tasks/edit', ['task' => $task]);
     }
@@ -90,7 +108,9 @@ class TaskController extends Controller
      */
     public function edit(int $task_id, EditTask $request)
     {
-        $task = Task::find($task_id);
+        /** @var App\Models\User **/
+        $user = Auth::user();
+        $task = $user->tasks()->findOrFail($task_id);
 
         $task->title = $request->title;
         $task->description = $request->description;
@@ -111,7 +131,9 @@ class TaskController extends Controller
      */
     public function showDeleteForm(int $task_id)
     {
-        $task = Task::find($task_id);
+        /** @var App\Models\User **/
+        $user = Auth::user();
+        $task = $user->tasks()->findOrFail($task_id);
 
         return view('tasks/delete', ['task' => $task]);
     }
@@ -125,7 +147,9 @@ class TaskController extends Controller
      */
     public function delete(int $task_id)
     {
-        $task = Task::find($task_id);
+        /** @var App\Models\User **/
+        $user = Auth::user();
+        $task = $user->tasks()->findOrFail($task_id);
 
         $task->delete();
 

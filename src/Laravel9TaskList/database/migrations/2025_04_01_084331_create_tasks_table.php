@@ -23,6 +23,8 @@ class CreateTasksTable extends Migration
             $table->string('description', 500);
             $table->integer('status')->default(1);
             $table->date('due_date');
+            $table->bigInteger('user_id')->unsigned();
+            $table->foreign('user_id')->references('id')->on('users');
             $table->timestamps();
         });
     }

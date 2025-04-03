@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
         // ]);
 
         /* call seeder list */
+        $this->call(UsersTableSeeder::class);
         $this->call(TasksTableSeeder::class);
         // 他のシーダーも必要に応じて追加
     }

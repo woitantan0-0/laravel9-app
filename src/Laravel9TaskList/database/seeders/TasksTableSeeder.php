@@ -18,15 +18,22 @@ class TasksTableSeeder extends Seeder
      */
     public function run()
     {
-        foreach (range(1, 3) as $num) {
-            DB::table('tasks')->insert([
-                'title' => "サンプルタスク {$num}",
-                'description' => "サンプル説明文 サンプル{$num}を実施する。",
-                'status' => $num,
-                'due_date' => Carbon::now()->addDay($num),
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ]);
+        $users = DB::table('users')->get();
+
+        foreach ($users as $user) {
+            foreach (range(1, 3) as $num) {
+                if ($user->id != 3) {
+                    DB::table('tasks')->insert([
+                        'title' => "サンプルタスク {$num}({$user->name})",
+                        'description' => "サンプル説明文 サンプル{$num}を実施する。({$user->name})",
+                        'status' => $num,
+                        'due_date' => Carbon::now()->addDay($num),
+                        'user_id' => $user->id,
+                        'created_at' => Carbon::now(),
+                        'updated_at' => Carbon::now(),
+                    ]);
+                }
+            }
         }
     }
 }
