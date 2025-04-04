@@ -32,16 +32,20 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     /* home page */
+    Route::get('/', [HomeController::class,"index"])->name('home');
     Route::get('/home', [HomeController::class,"index"])->name('home');
     /* index page */
     Route::get("/tasks", [TaskController::class,"index"])->name("tasks.index");
     /* task create page */
     Route::get('/tasks/create', [TaskController::class,"showCreateForm"])->name('tasks.create');
     Route::post('/tasks/create', [TaskController::class,"create"]);
-    Route::get('/tasks/{task_id}/edit', [TaskController::class,"showEditForm"])->name('tasks.edit');
-    Route::post('/tasks/{task_id}/edit', [TaskController::class,"edit"]);
-    Route::get('/tasks/{task_id}/delete', [TaskController::class,"showDeleteForm"])->name('tasks.delete');
-    Route::post('/tasks/{task_id}/delete', [TaskController::class,"delete"]);
+
+    Route::middleware('can:view,task')->group(function () {
+        Route::get('/tasks/{task}/edit', [TaskController::class,"showEditForm"])->name('tasks.edit');
+        Route::post('/tasks/{task}/edit', [TaskController::class,"edit"]);
+        Route::get('/tasks/{task}/delete', [TaskController::class,"showDeleteForm"])->name('tasks.delete');
+        Route::post('/tasks/{task}/delete', [TaskController::class,"delete"]);
+    });
 });
 
 require __DIR__.'/auth.php';

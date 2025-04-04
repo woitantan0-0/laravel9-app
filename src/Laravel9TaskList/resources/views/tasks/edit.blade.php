@@ -20,7 +20,7 @@
                                 </ul>
                             </div>
                         @endif
-                        <form action="{{ route('tasks.edit', ['task_id' => $task->id]) }}" method="POST">
+                        <form action="{{ route('tasks.edit', ['task' => $task->id]) }}" method="POST">
                             @csrf
                             <div class="form-group">
                                 <label for="title">タイトル</label>
@@ -49,6 +49,7 @@
                                 <input type="text" class="form-control" name="due_date" id="due_date" value="{{ old('due_date') ?? $task->format_due_date }}" />
                             </div>
                             <div class="text-right">
+                                <button type="button" class="btn btn-primary" onclick="window.location='{{ route('tasks.index') }}'">キャンセル</button>
                                 <button type="submit" class="btn btn-primary">送信</button>
                             </div>
                         </form>

@@ -35,8 +35,8 @@
                                             <span class="label {{ $task->status_class }}">{{ $task->status_label }}</span>
                                         </td>
                                         <td>{{ $task->format_due_date }}</td>
-                                        <td><a href="/tasks/{{ $task->id }}/edit">編集</a></td>
-                                        <td><a href="/tasks/{{ $task->id }}/delete">削除</a></td>
+                                        <td><a href="{{ route('tasks.edit', ['task' => $task->id]) }}">編集</a></td>
+                                        <td><a href="{{ route('tasks.delete', ['task' => $task->id]) }}">削除</a></td>
                                     </tr>
                                 @endif
                             @endforeach

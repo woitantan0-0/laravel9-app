@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use App\Models\Task;
 use App\Models\User;
 use App\Http\Requests\CreateTask;
 use App\Http\Requests\EditTask;
-use Illuminate\Support\Facades\Auth;
 
 class TaskController extends Controller
 {
@@ -30,20 +32,24 @@ class TaskController extends Controller
      */
     public function index()
     {
-        $tasks = Task::all()->sortBy('user_id');
-        $users = User::all();
-        foreach($tasks as $task) {
-            foreach($users as $user) {
-                if ($task->user_id === $user->id) {
-                    $task->user_name = $user->name;
+        try {
+            $tasks = Task::all()->sortBy('user_id');
+            $users = User::all();
+            foreach($tasks as $task) {
+                foreach($users as $user) {
+                    if ($task->user_id === $user->id) {
+                        $task->user_name = $user->name;
+                    }
                 }
             }
-        }
 
-        return view('tasks/index', [
-            'tasks' => $tasks,
-            'users' => $users,
-        ]);
+            return view('tasks/index', [
+                'tasks' => $tasks,
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('Error TaskController in index: ' . $e->getMessage());
+            abort(500);
+        }
     }
 
     /**
@@ -54,10 +60,16 @@ class TaskController extends Controller
      */
     public function showCreateForm()
     {
-        // ログインユーザーに紐づくタスクだけを取得
-        $tasks = Auth::user()->tasks;
+        try {
+            // ログインユーザーに紐づくタスクだけを取得
+            $tasks = Auth::user()->tasks;
 
-        return view('tasks/create', compact('tasks'));
+            return view('tasks/create', compact('tasks'));
+        } catch (\Throwable $e) {
+            Log::error('Error TaskController in showCreateForm: ' . $e->getMessage());
+            abort(500);
+        }
+        
     }
 
     /**
@@ -69,90 +81,122 @@ class TaskController extends Controller
      */
     public function create(CreateTask $request)
     {
-        $task = new Task();
-        $task->title = $request->title;
-        $task->description = $request->description;
-        $task->status = $request->status;
-        $task->due_date = $request->due_date;
-
-        // （ログイン）ユーザーに紐づけて保存する
-        Auth::user()->tasks()->save($task);
-
-        return redirect()->route('tasks.index');
+        try {
+            $task = new Task();
+            $task->title = $request->title;
+            $task->description = $request->description;
+            $task->status = $request->status;
+            $task->due_date = $request->due_date;
+    
+            // （ログイン）ユーザーに紐づけて保存する
+            Auth::user()->tasks()->save($task);
+    
+            return redirect()->route('tasks.index');
+        } catch (\Throwable $e) {
+            Log::error('Error TaskController in create: ' . $e->getMessage());
+            abort(500);
+        }
     }
 
     /**
      *  【タスク編集ページの表示機能】
      *  機能：タスクIDを編集ページに渡して表示する
      *  
-     *  GET /tasks/{task_id}/edit
-     *  @param int $task_id
+     *  GET /tasks/{task}/edit
+     *  @param Task $task
      *  @return \Illuminate\View\View
      */
-    public function showEditForm(int $task_id)
+    public function showEditForm(Task $task)
     {
-        /** @var App\Models\User **/
-        $user = Auth::user();
-        $task = $user->tasks()->findOrFail($task_id);
-
-        return view('tasks/edit', ['task' => $task]);
+        try {
+            /** @var App\Models\User **/
+            $user = Auth::user();
+            $task = $user->tasks()->findOrFail($task->id);
+    
+            return view('tasks/edit', ['task' => $task]);
+        } catch (\Throwable $e) {
+            Log::error('Error TaskController in showEditForm: ' . $e->getMessage());
+            abort(500);
+        }
     }
 
     /**
      *  【タスクの編集機能】
      *
-     *  POST /tasks/{task_id}/edit
-     *  @param int $task_id
+     *  POST /tasks/{task}/edit
+     *  @param Task $task
      *  @param EditTask $request
      *  @return \Illuminate\Http\RedirectResponse
      */
-    public function edit(int $task_id, EditTask $request)
+    public function edit(Task $task, EditTask $request)
     {
-        /** @var App\Models\User **/
-        $user = Auth::user();
-        $task = $user->tasks()->findOrFail($task_id);
+        try {
+            /** @var App\Models\User **/
+            $user = Auth::user();
+            $task = $user->tasks()->findOrFail($task->id);
+    
+            $task->title = $request->title;
+            $task->description = $request->description;
+            $task->status = $request->status;
+            $task->due_date = $request->due_date;
 
-        $task->title = $request->title;
-        $task->description = $request->description;
-        $task->status = $request->status;
-        $task->due_date = $request->due_date;
-        $task->save();
-
-        return redirect()->route('tasks.index');
+            $task = DB::transaction(function () use ($task) {
+                $task->save();
+                return $task;
+            });
+    
+            return redirect()->route('tasks.index');
+        } catch (\Throwable $e) {
+            Log::error('Error TaskController in edit: ' . $e->getMessage());
+            abort(500);
+        }
     }
 
     /**
      *  【タスク削除ページの表示機能】
      *  機能：タスクIDを削除ページに渡して表示する
      *  
-     *  GET /tasks/{task_id}/edit
-     *  @param int $task_id
+     *  GET /tasks/{task}/edit
+     *  @param Task $task
      *  @return \Illuminate\View\View
      */
-    public function showDeleteForm(int $task_id)
+    public function showDeleteForm(Task $task)
     {
-        /** @var App\Models\User **/
-        $user = Auth::user();
-        $task = $user->tasks()->findOrFail($task_id);
-
-        return view('tasks/delete', ['task' => $task]);
+        try {
+            /** @var App\Models\User **/
+            $user = Auth::user();
+            $task = $user->tasks()->findOrFail($task->id);
+    
+            return view('tasks/delete', ['task' => $task]);
+        } catch (\Throwable $e) {
+            Log::error('Error TaskController in showDeleteForm: ' . $e->getMessage());
+            abort(500);
+        }
     }
 
     /**
      *  【タスクの削除機能】
      *
-     *  POST /tasks/{task_id}/delete
-     *  @param int $task_id
+     *  POST /tasks/{task}/delete
+     *  @param Task $task
      *  @return \Illuminate\Http\RedirectResponse
      */
-    public function delete(int $task_id)
+    public function delete(Task $task)
     {
-        /** @var App\Models\User **/
-        $user = Auth::user();
-        $task = $user->tasks()->findOrFail($task_id);
+        try {
+            /** @var App\Models\User **/
+            $user = Auth::user();
+            $task = $user->tasks()->findOrFail($task->id);
 
-        $task->delete();
-
-        return redirect()->route('tasks.index');
+            $task = DB::transaction(function () use ($task) {
+                $task->delete();
+                return $task;
+            });
+    
+            return redirect()->route('tasks.index');
+        } catch (\Throwable $e) {
+            Log::error('Error TaskController in delete: ' . $e->getMessage());
+            abort(500);
+        }
     }
 }
