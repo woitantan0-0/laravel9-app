@@ -63,4 +63,12 @@ class Task extends Model
 
         return Carbon::createFromFormat('Y-m-d', $status)->format('Y/m/d');
     }
+
+    /**
+     * TaskモデルからUserモデルへの関連付け
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

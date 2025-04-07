@@ -42,6 +42,9 @@
                         <div class="form-group">
                             <label for="title">タイトル</label>
                             <input type="text" class="form-control" name="title" id="title" value="{{ old('title') }}" />
+                            @error('title')
+                            <p style="color:red;">{{ $message }}</p>
+                            @enderror
                         </div>
                         <div class="form-group">
                             <label for="description">説明文</label>
@@ -58,6 +61,9 @@
                         <div class="form-group">
                             <label for="due_date">期限</label>
                             <input type="text" class="form-control" name="due_date" id="due_date" value="{{ old('due_date') }}" />
+                            @error('due_date')
+                            <p style="color:red;">{{ $message }}</p>
+                            @enderror
                         </div>
                         <div class="text-right">
                             <button type="submit" class="btn btn-primary">送信</button>

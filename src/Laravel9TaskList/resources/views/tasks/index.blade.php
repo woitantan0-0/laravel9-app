@@ -63,7 +63,7 @@
                                             <span class="label {{ $task->status_class }}">{{ $task->status_label }}</span>
                                         </td>
                                         <td>{{ $task->format_due_date }}</td>
-                                        <td>{{ $task->user_name }}</td>
+                                        <td class="user_id_{{$task->user->id}}" mail="{{$task->user->email}}">{{ $task->user->name }}</td>
                                     </tr>
                                 @endif
                             @endforeach

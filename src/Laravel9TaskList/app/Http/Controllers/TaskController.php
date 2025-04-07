@@ -33,15 +33,7 @@ class TaskController extends Controller
     public function index()
     {
         try {
-            $tasks = Task::all()->sortBy('user_id');
-            $users = User::all();
-            foreach($tasks as $task) {
-                foreach($users as $user) {
-                    if ($task->user_id === $user->id) {
-                        $task->user_name = $user->name;
-                    }
-                }
-            }
+            $tasks = Task::orderBy('user_id')->get();
 
             return view('tasks/index', [
                 'tasks' => $tasks,
