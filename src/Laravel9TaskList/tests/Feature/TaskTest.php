@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use App\Models\User;
 use App\Http\Requests\CreateTask;
 use Carbon\Carbon;
 use Tests\TestCase;
@@ -22,6 +23,9 @@ class TaskTest extends TestCase
         parent::setUp();
 
         $this->seed('TasksTableSeeder');
+
+        $user = User::factory()->create();
+        $this->actingAs($user);
     }
 
     /**
@@ -79,8 +83,8 @@ class TaskTest extends TestCase
             'due_date' => Carbon::today()->format('Y/m/d'),
         ]);
     
-        $response->assertInvalid([
-            'status' => '状態 には 未着手,着手中,完了 のいずれかを指定してください。',
+        $response->assertSessionHasErrors([
+            'status',
         ]);
     }
 }

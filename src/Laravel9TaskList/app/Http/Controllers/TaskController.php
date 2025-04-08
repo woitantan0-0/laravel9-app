@@ -33,7 +33,15 @@ class TaskController extends Controller
     public function index()
     {
         try {
+            // 確認したいSQLの前にこれを仕込んで
+            // DB::enableQueryLog();
+
             $tasks = Task::orderBy('user_id')->get();
+
+            // タスク内容確認
+            // dump($tasks);
+            //  SQLログを取得してdump
+            // dd(\DB::getQueryLog());
 
             return view('tasks/index', [
                 'tasks' => $tasks,
