@@ -53,14 +53,14 @@ class RemindTask extends Command
             foreach($tasks as $key => $task) {
                 // 完了したタスクは含めない
                 if ($task->status == 3) {
-                    unset($tasks[$key]);
+                    unset($tasks->{$key});
                     continue;
                 }
                 // 現在日時を取得
                 $today = Carbon::now();
                 // 対象の日付が今日よりも後なら含めない
                 if ($task->due_date >= $today) {
-                    unset($tasks[$key]);
+                    unset($tasks->{$key});
                     continue;
                 }
             }
